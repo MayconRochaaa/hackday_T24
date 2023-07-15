@@ -1,0 +1,19 @@
+from sklearn.model_selection import train_test_split, cross_val_score, RepeatedStratifiedKFold
+from sklearn.feature_selection import  RFECV, RFE
+from lightgbm import LGBMClassifier as LGBM
+
+model = LGBM(n_jobs=-1, n_estimators=200)
+
+cv = RepeatedStratifiedKFold(n_splits=3, n_repeats=2)
+scores = cross_val_score(model, X, y, scoring='precision', cv=cv, n_jobs=-1)
+score = np.mean(scores)
+print('Precision Score: %.3f' % (score))
+
+model1 = model.fit(X, y)
+
+# Features importances table
+feature_score1 = pd.DataFrame(
+                            { 'feature_name': X.columns ,
+                              'feature_importance': model1.feature_importances_ }
+                            )
+sns.barplot(data=feature_score1, x='feature_importance', y='feature_name');
